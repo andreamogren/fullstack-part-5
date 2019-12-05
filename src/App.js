@@ -17,11 +17,19 @@ const App = () => {
       .then(initialBlogs => setBlogs(initialBlogs))
   }, [])
 
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogUser')
+
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+    }
+  }, [])
+
   const rows = () => blogs.map(blog =>
     <Blog
       key={blog.id}
       blog={blog}
-      toggleImportance={() => toggleImportanceOf(blog.id)}
     />
   )
   
@@ -46,16 +54,6 @@ const App = () => {
       })
   }
 
-  const toggleImportanceOf = id => {
-    const blog = blogs.find(n => n.id === id)
-    const changedBlog = { ...blog, important: !blog.important }
-
-    blogService
-      .update(id, changedBlog)
-      .then(returnedBlog => {
-        setBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
-      })      
-  }
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -64,12 +62,19 @@ const App = () => {
         username, password
       })
 
+      window.localStorage.setItem('loggedBlogUser', JSON.stringify(user))
+
       setUser(user)
       setUsername('')
       setPassword('')
     } catch (exception) {
       alert('Wrong credentials')
     }
+  }
+
+  const logOut = () => {
+    window.localStorage.removeItem('loggedBlogUser')
+    setUser(null)
   }
 
   const loginForm = () => (
@@ -98,11 +103,22 @@ const App = () => {
   
   const blogForm = () => (
     <form onSubmit={addBlog}>
+      title:
       <input
         value={newBlog} 
         onChange={handleBlogChange}
       />
-      <button type="submit">save</button>
+      author:
+      <input
+        value={newBlog} 
+        onChange={handleBlogChange}
+      />
+      url:
+      <input
+        value={newBlog} 
+        onChange={handleBlogChange}
+      />
+      <button type="submit">Save</button>
     </form>
   )
 
@@ -113,6 +129,7 @@ const App = () => {
         loginForm() : 
         <div>
           <p>{user.name} logged in</p>
+          <button type="submit" onClick={logOut}>Log out</button>
           {blogForm()}
         </div>
       }
