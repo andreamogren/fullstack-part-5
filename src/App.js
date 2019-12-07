@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useReducer } from 'react'
 import Blog from './components/Blog'
+import AddBlogForm from './components/AddBlogForm'
 import blogService from './services/blogs' 
 import loginService from './services/login'
 
@@ -17,7 +18,6 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
-
   useEffect(() => {
     blogService
       .getAll()
@@ -28,9 +28,9 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogUser')
 
     if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-      blogService.setToken(user.token)
+      const loggedInUser = JSON.parse(loggedUserJSON)
+      setUser(loggedInUser)
+      blogService.setToken(loggedInUser.token)
     }
   }, [])
 
@@ -54,9 +54,8 @@ const App = () => {
       title: userInput.title,
       author: userInput.author,
       url: userInput.url,
+      userId: user.id
     }
-    
-    console.log(blogObject)
 
     blogService
       .create(blogObject)
@@ -65,19 +64,17 @@ const App = () => {
       })
   }
 
-
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
-      const user = await loginService.login({
+      const userCredentials = await loginService.login({
         username, password
       })
 
-      window.localStorage.setItem('loggedBlogUser', JSON.stringify(user))
-      console.log(user.token)
+      window.localStorage.setItem('loggedBlogUser', JSON.stringify(userCredentials))
 
-      blogService.setToken(user.token)
-      setUser(user)
+      blogService.setToken(userCredentials.token)
+      setUser(userCredentials)
       setUsername('')
       setPassword('')
     } catch (exception) {
@@ -115,30 +112,11 @@ const App = () => {
   )
   
   const blogForm = () => (
-    <form onSubmit={addBlog}>
-      title:
-      {userInput.title} 
-      <input
-        name="title"
-        value={userInput.title} 
-        onChange={handleBlogChange}
-      />
-      author:
-      {userInput.author} 
-      <input
-        name="author"
-        value={userInput.author} 
-        onChange={handleBlogChange}
-      />
-      url:
-      {userInput.url} 
-      <input
-        name="url"
-        value={userInput.url} 
-        onChange={handleBlogChange}
-      />
-      <button type="submit">Save</button>
-    </form>
+    <AddBlogForm
+      addBlog={addBlog}
+      handleBlogChange={handleBlogChange}
+      userInput={userInput}
+    />
   )
 
   return (
