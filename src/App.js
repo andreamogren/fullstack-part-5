@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useReducer } from 'react'
 import Blog from './components/Blog'
+import Togglable from './components/Togglable'
 import AddBlogForm from './components/AddBlogForm'
 import blogService from './services/blogs' 
 import loginService from './services/login'
@@ -34,6 +35,8 @@ const App = () => {
     }
   }, [])
 
+  const blogFormRef = React.createRef()
+
   const rows = () => blogs.map(blog =>
     <Blog
       key={blog.id}
@@ -49,7 +52,8 @@ const App = () => {
   }
 
   const addBlog = (event) => {
-    event.preventDefault()  
+    event.preventDefault()
+    blogFormRef.current.toggleVisibility()  
     const blogObject = {
       title: userInput.title,
       author: userInput.author,
@@ -127,13 +131,14 @@ const App = () => {
         <div>
           <p>{user.name} logged in</p>
           <button type="submit" onClick={logOut}>Log out</button>
+          <Togglable buttonLabel="New blog" ref={blogFormRef}>
           {blogForm()}
+          </Togglable>
         </div>
       }
       <ul>
         {rows()}
       </ul>
-
     </div>
   )
 }
