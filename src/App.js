@@ -66,6 +66,7 @@ const App = () => {
       .then(data => {
         setBlogs(blogs.concat(data))
       })
+    setUserInput({'title': '', 'author': '', 'url': ''})
   }
 
   const handleLogin = async (event) => {
