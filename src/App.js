@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from 'react'
+import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import Togglable from './components/Togglable'
 import AddBlogForm from './components/AddBlogForm'
@@ -8,16 +8,11 @@ import useField from './hooks'
 
 const App = () => {
   const [blogs, setBlogs] = useState([]) 
-  const [userInput, setUserInput] = useReducer(
-    (setState, newState) => ({...setState, ...newState}),
-    {
-      author: '',
-      title: '',
-      url: '',
-    }
-  )
   const usernameFields = useField('text')
   const passwordFields = useField('password')
+  const author = useField('text')
+  const title = useField('text')
+  const url = useField('text')
   const [user, setUser] = useState(null)
   const username = usernameFields.value
   const password = passwordFields.value
@@ -46,21 +41,14 @@ const App = () => {
       blog={blog}
     />
   )
-  
-  const handleBlogChange = (event) => {
-    const name = event.target.name
-    const newValue = event.target.value
-
-    setUserInput({[name]: newValue})
-  }
 
   const addBlog = (event) => {
     event.preventDefault()
     blogFormRef.current.toggleVisibility()  
     const blogObject = {
-      title: userInput.title,
-      author: userInput.author,
-      url: userInput.url,
+      title: title.value,
+      author: author.value,
+      url: url.value,
       userId: user.id
     }
 
@@ -69,7 +57,9 @@ const App = () => {
       .then(data => {
         setBlogs(blogs.concat(data))
       })
-    setUserInput({'title': '', 'author': '', 'url': ''})
+    author.resetValue('')
+    title.resetValue('')
+    url.resetValue('')
   }
 
   const handleLogin = async (event) => {
@@ -83,6 +73,8 @@ const App = () => {
 
       blogService.setToken(userCredentials.token)
       setUser(userCredentials)
+      usernameFields.resetValue()
+      passwordFields.resetValue()
     } catch (exception) {
       alert('Wrong credentials')
     }
@@ -110,8 +102,9 @@ const App = () => {
   const blogForm = () => (
     <AddBlogForm
       addBlog={addBlog}
-      handleBlogChange={handleBlogChange}
-      userInput={userInput}
+      author={author}
+      title={title}
+      url={url}
     />
   )
 

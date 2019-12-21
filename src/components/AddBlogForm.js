@@ -1,27 +1,18 @@
 import React from 'react'
 
-const AddBlogForm = ({addBlog, handleBlogChange, userInput}) => (
+const AddBlogForm = ({addBlog, handleBlogChange, author, title, url}) => (
     <form onSubmit={addBlog}>
         <label htmlFor="title">Title: </label>
         <input
-        id="title"
-        name="title"
-        value={userInput.title} 
-        onChange={handleBlogChange}
+        {...title}
         /><br />
         <label htmlFor="author">Author: </label>
         <input
-        id="author"
-        name="author"
-        value={userInput.author} 
-        onChange={handleBlogChange}
+        {...author}
         /><br />
         <label htmlFor="url">Url: </label>
         <input
-        id="url"
-        name="url"
-        value={userInput.url} 
-        onChange={handleBlogChange}
+        {...url}
         /><br />
         <button type="submit">Save</button>
     </form>
