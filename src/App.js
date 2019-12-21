@@ -16,11 +16,11 @@ const App = () => {
       url: '',
     }
   )
-/*   const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('') */
-  const username = useField('text')
-  const password = useField('password')
+  const usernameFields = useField('text')
+  const passwordFields = useField('password')
   const [user, setUser] = useState(null)
+  const username = usernameFields.value
+  const password = passwordFields.value
 
   useEffect(() => {
     blogService
@@ -74,21 +74,15 @@ const App = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    console.log("Username: ", username, "Password: ", password)
-    console.log("username value:", username.value)
-    const usernameValue = username.value
-    const passwordValue = password.value
     try {
       const userCredentials = await loginService.login({
-        usernameValue, passwordValue
+        username, password
       })
 
       window.localStorage.setItem('loggedBlogUser', JSON.stringify(userCredentials))
 
       blogService.setToken(userCredentials.token)
       setUser(userCredentials)
-/*       setUsername('')
-      setPassword('') */
     } catch (exception) {
       alert('Wrong credentials')
     }
@@ -103,11 +97,11 @@ const App = () => {
     <form onSubmit={handleLogin}>
       <div>
         Username:
-        <input {...username} />
+        <input {...usernameFields}/>
       </div>
       <div>
         Password:
-        <input {...password} />
+        <input {...passwordFields}/> 
       </div>
       <button type="submit">Login</button>
     </form>
