@@ -85,15 +85,21 @@ const App = () => {
     setUser(null)
   }
 
+  const removeProperty = prop => ({ [prop]: _, ...rest }) => rest
+  const removeReset = removeProperty('resetValue')
+
+  const usernameWashed = removeReset(usernameFields)
+  const passwordWashed = removeReset(passwordFields)
+
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <div>
         Username:
-        <input {...usernameFields}/>
+        <input {...usernameWashed}/>
       </div>
       <div>
         Password:
-        <input {...passwordFields}/> 
+        <input {...passwordWashed}/> 
       </div>
       <button type="submit">Login</button>
     </form>
